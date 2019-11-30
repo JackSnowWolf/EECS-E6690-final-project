@@ -1,0 +1,9 @@
+/venv
+.idea
+.DS_Store
+.Rhistory
+*.Rproj
+.RData
+.Rproj.user/
+*.log
+

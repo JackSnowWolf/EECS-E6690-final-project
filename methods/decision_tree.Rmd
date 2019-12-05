@@ -17,7 +17,7 @@ This is an R Markdown document.
 library("readxl")
 data1 = read_excel("../data/1415CSM_dataset.xlsx")
 i=1
-
+asLabel=""
 for (val in data1$Ratings) {
   if(val<=4.9){
     asLabel[i]="Poor"
@@ -68,38 +68,76 @@ ctt1
 ```
 ## Predict (below with the train and validation set)
 ```{r}
-PredLabel = predict(ctt1,train,type="class")
-PredTreeScore = data.frame(predict(ctt1,train,type="vector"))
-train = data.frame(train,PredLabel,PredTreeScore)
+PredLabel1 = predict(ctt1,train,type="class")
+PredTreeScore1 = data.frame(predict(ctt1,train,type="vector"))
+train = data.frame(train,PredLabel1,PredTreeScore1)
 
 ## valid
-PredLabelValid = predict(ctt1,valid,type="class")
-PredTreeScoreValid = data.frame(predict(ctt1,valid,type="vector"))
-valid = data.frame(valid,PredLabelValid,PredTreeScoreValid)
+PredLabelValid1 = predict(ctt1,valid,type="class")
+PredTreeScoreValid1 = data.frame(predict(ctt1,valid,type="vector"))
+valid = data.frame(valid,PredLabelValid1,PredTreeScoreValid1)
 ```
 
 ## Give out the validation error rate, which is 0.426, not bad.
 ```{r}
-tablev = table(valid$PredLabelValid,valid$asLabel)
-error_valid = 1 - sum(diag(tablev)) / sum(tablev)
-error_valid
+tablev1 = table(valid$PredLabelValid1,valid$asLabel)
+error_valid1 = 1 - sum(diag(tablev1)) / sum(tablev1)
+error_valid1
 ```
 ## Gains
 ```{r}
-print(train$asLabel)
-print(PredTreeScore)
+print(asLabel)
+print(train$Ratings)
+print(PredTreeScore1$Average)
 library(gains)
-gtt = gains(actual=train$asLabel,predicted=PredTreeScore,optimal=TRUE)
+# gtt = gains(actual=train$asLabel,predicted=PredTreeScore1,optimal=TRUE)
+gtt = gains(actual=train$Ratings,predicted=PredTreeScore1$Average,optimal=TRUE)
 cpt_y = gtt$cume.pct.of.total
 cpt_x = gtt$depth
 
-## validation
+# validation
 # gtv = gains(actual=valid$asLabel,predicted=valid$PredTreeScoreValid,optimal=TRUE)
-# cpv_y = gtv$cume.pct.of.total
-# cpv_x = gtv$depth
+gtv = gains(actual=valid$Ratings,predicted=PredTreeScoreValid1$Average,optimal=TRUE)
+cpv_y = gtv$cume.pct.of.total
+cpv_x = gtv$depth
 ```
+validation gains chart:
+```{r}
+library(rlang)
+# gtt = gains(actual=train$asLabel,predicted=PredTreeScore1,optimal=TRUE)
+gtt = gains(actual=train$Ratings,predicted=PredTreeScore1$Average,optimal=TRUE)
+cpt_y = gtt$cume.pct.of.total
+cpt_x = gtt$depth
+predictedValid1 = table(valid$PredLabelValid1)[1]
 
-
+xxv = cpv_x / 100 * 6000
+yyv = cpv_y * predictedValid1
+#plot(xxv,yyv)
+xxv = prepend(xxv,0,before=1)
+yyv = prepend(yyv,0,before=1)
+fitv = lm(yyv~poly(xxv,3,raw=TRUE))
+xxv = 0:6000
+model_yyv = predict(fitv,data.frame(xxv))
+png("CT_lift_chart_valid.png")
+plot(xxv, model_yyv, col="green",xlab="Number of total data", ylab="Cumulative number of target data")
+best_yyv = rep(predictedValid1,6001)
+for(i in 0:predictedValid1){
+  best_yyv[i+1] = i
+}
+lines(xxv,best_yyv,col="red",lwd=3)
+base_yyv = predictedValid1 / 6000 * xxv
+lines(xxv,base_yyv,col="blue")
+legend(17500,750, legend=c("best curve","model", "baseline"), col = c("red","green","blue"), lwd=c(1,1,1),cex=1)
+title("Lift chart of CT (validation)")
+dev.off()
+library(geiger)
+#area1 = geiger:::.area.between.curves(xx,base_yy,yy)
+#area2 = geiger:::.area.between.curves(xx,best_yy,yy)
+#area1 / area2
+a1v = sum(model_yyv-base_yyv)
+a2v = sum(best_yyv-base_yyv)
+a1v/a2v
+```
 
 
 

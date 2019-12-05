@@ -7,6 +7,8 @@ Final project for EEC E6690 Statistical learning @ Columbia University
 ## Code
 
 ## Citation
+- [Ahmed M, Jahangir M, Afzal H, Majeed A, Siddiqi I. Using Crowd-source based features from social media and Conventional features to predict the movies popularity. InSmart City/SocialCom/SustainCom (SmartCity), 2015 IEEE International Conference on 2015 Dec 19 (pp. 273-278). IEEE.](https://www.semanticscholar.org/paper/Using-Crowd-Source-Based-Features-from-Social-Media-Ahmed-Jahangir/c6c01381cadf95b14486fe80f6d898ddb3c0ec15)
+- [CSM (Conventional and Social Media Movies) Dataset 2014 and 2015 Data Set](https://archive.ics.uci.edu/ml/datasets/CSM+%28Conventional+and+Social+Media+Movies%29+Dataset+2014+and+2015)
 
 ## Contact
 

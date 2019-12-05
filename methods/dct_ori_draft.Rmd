@@ -1,0 +1,59 @@
+---
+title: "draft1205"
+author: "Wenjie Chen"
+date: "12/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(dplyr)
+library(corrplot)
+library("readxl")
+
+#Import and view Data
+
+#Eliminate missing values
+dataset <- read_excel("../data/1415CSM_dataset.xlsx")
+
+#Find correlation between variables.
+corrdata <- select(dataset, 5,6,7,10,11,12,13,14)
+M <- cor(corrdata)
+corrplot(M, method = "number")
+#It is evident that there is significant correlation betweeen likes,dislikes and comments.
+
+#Convert relevant variables to factors.
+dataset$Sequel = as.factor(dataset$Sequel)
+dataset$Genre = as.factor(dataset$Genre)
+dataset$Year = as.factor(dataset$Year)
+
+#Prepare data for model. Select features based on the corrplot with minimum corelations between them.
+data_model <- select(dataset, 2,3,4,5,6,7,8,9,10,14)
+str(data_model)
+
+#Build model with gorss as the target variable using year, ratings, genre, budget, screens, sequel, sentiment, views and aggregate followers as predictors.
+fit <- lm(Gross~.,data = data_model)
+summary(fit)
+
+plot(fit)
+
+#The model has an R squared of 66.01%. I would like to further explore ways to increase it.
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+

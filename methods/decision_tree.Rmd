@@ -25,7 +25,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Average"
   }else if(val<=8.9){
     asLabel[i]="Good"
-  }else{
+  }else if(val<=10){
     asLabel[i]="Excellent"
   }
   i=i+1
@@ -86,48 +86,97 @@ error_valid1
 ```
 ## Gains
 ```{r}
-print(asLabel)
-print(train$Ratings)
-print(PredTreeScore1$Average)
 library(gains)
+# # train
+# print(asLabel)
+# print(train$Ratings)
+# print(PredTreeScore1$Poor)
+# print(PredTreeScore1$Average)
+# print(PredTreeScore1$Good)
+label2point=0;
+n=1
+for (m in train$asLabel) {
+  if(identical(m,"Poor")){
+    label2point[n]=4.9
+  }else if(identical(m,"Average")){
+    label2point[n]=6.4
+  }else if(identical(m,"Good")){
+    label2point[n]=8.9
+  }else if(identical(m,"Excellent")){
+    label2point[n]=10
+  }
+  n=n+1
+}
+print(label2point)
+print((PredTreeScore1$Poor)*4.9+(PredTreeScore1$Average)*6.4+(PredTreeScore1$Good)*8.9)
+
 # gtt = gains(actual=train$asLabel,predicted=PredTreeScore1,optimal=TRUE)
-gtt = gains(actual=train$Ratings,predicted=PredTreeScore1$Average,optimal=TRUE)
+gtt = gains(actual=label2point,
+            predicted=(PredTreeScore1$Poor)*4.9+(PredTreeScore1$Average)*6.4+(PredTreeScore1$Good)*8.9,
+            optimal=TRUE)
 cpt_y = gtt$cume.pct.of.total
 cpt_x = gtt$depth
 
-# validation
+# # validation
+label2point_valid=0;
+q=1
+for (p in valid$asLabel) {
+  if(identical(p,"Poor")){
+    label2point_valid[q]=4.9
+  }else if(identical(p,"Average")){
+    label2point_valid[q]=6.4
+  }else if(identical(p,"Good")){
+    label2point_valid[q]=8.9
+  }else if(identical(p,"Excellent")){
+    label2point_valid[q]=10
+  }
+  q=q+1
+}
+print(label2point_valid)
+print((PredTreeScoreValid1$Poor)*4.9+(PredTreeScoreValid1$Average)*6.4+(PredTreeScoreValid1$Good)*8.9)
+
 # gtv = gains(actual=valid$asLabel,predicted=valid$PredTreeScoreValid,optimal=TRUE)
-gtv = gains(actual=valid$Ratings,predicted=PredTreeScoreValid1$Average,optimal=TRUE)
+gtv = gains(actual=label2point_valid,
+            predicted=(PredTreeScoreValid1$Poor)*4.9+(PredTreeScoreValid1$Average)*6.4+(PredTreeScoreValid1$Good)*8.9,
+            optimal=TRUE)
 cpv_y = gtv$cume.pct.of.total
 cpv_x = gtv$depth
 ```
-validation gains chart:
+
+## validation gains chart:
 ```{r}
 library(rlang)
 # gtt = gains(actual=train$asLabel,predicted=PredTreeScore1,optimal=TRUE)
-gtt = gains(actual=train$Ratings,predicted=PredTreeScore1$Average,optimal=TRUE)
+# gtt = gains(actual=train$Ratings,predicted=PredTreeScore1$Average,optimal=TRUE)
+# cpt_y = gtt$cume.pct.of.total
+# cpt_x = gtt$depth
+
+gtt = gains(actual=label2point,
+            predicted=(PredTreeScore1$Poor)*4.9+(PredTreeScore1$Average)*6.4+(PredTreeScore1$Good)*8.9,
+            optimal=TRUE)
 cpt_y = gtt$cume.pct.of.total
 cpt_x = gtt$depth
+
 predictedValid1 = table(valid$PredLabelValid1)[1]
 
-xxv = cpv_x / 100 * 6000
+xxv = cpv_x / 100 * 300
 yyv = cpv_y * predictedValid1
 #plot(xxv,yyv)
 xxv = prepend(xxv,0,before=1)
 yyv = prepend(yyv,0,before=1)
 fitv = lm(yyv~poly(xxv,3,raw=TRUE))
-xxv = 0:6000
+xxv = 0:300
 model_yyv = predict(fitv,data.frame(xxv))
 png("CT_lift_chart_valid.png")
 plot(xxv, model_yyv, col="green",xlab="Number of total data", ylab="Cumulative number of target data")
-best_yyv = rep(predictedValid1,6001)
+best_yyv = rep(predictedValid1,301)
 for(i in 0:predictedValid1){
   best_yyv[i+1] = i
 }
 lines(xxv,best_yyv,col="red",lwd=3)
-base_yyv = predictedValid1 / 6000 * xxv
+base_yyv = predictedValid1 / 300 * xxv
 lines(xxv,base_yyv,col="blue")
-legend(17500,750, legend=c("best curve","model", "baseline"), col = c("red","green","blue"), lwd=c(1,1,1),cex=1)
+legend(1750,75, legend=c("best curve","model", "baseline"), col = c("red","green","blue"), lwd=c(1,1,1),cex=1)
 title("Lift chart of CT (validation)")
 dev.off()
 library(geiger)

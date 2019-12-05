@@ -1,0 +1,107 @@
+---
+title: "decision_tree"
+author: "Wenjie Chen"
+date: "12/4/2019"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. 
+
+```{r}
+library("readxl")
+data1 = read_excel("../data/1415CSM_dataset.xlsx")
+i=1
+
+for (val in data1$Ratings) {
+  if(val<=4.9){
+    asLabel[i]="Poor"
+  }else if(val<=6.4){
+    asLabel[i]="Average"
+  }else if(val<=8.9){
+    asLabel[i]="Good"
+  }else{
+    asLabel[i]="Excellent"
+  }
+  i=i+1
+}
+# print(asLabel)
+data1 = data.frame(data1,asLabel)
+# print(data1)
+set.seed(10)
+datasize = dim(data1)[1]
+train_idx = sample(datasize, datasize*0.8)
+
+indicator1 = rep(0,datasize)
+indicator1[train_idx] = 1 # 1:train 0:valid
+data1 = data.frame(data1,indicator1)
+```
+
+## Decision Tree
+```{r}
+library(tree)
+train = subset(data1,data1$indicator1==1)
+valid = subset(data1,data1$indicator1==0)
+
+ctt1 = tree(asLabel~.-Year-Movie-Ratings,train)
+#ctv = tree(High~.-X.U.FEFF.ID-indicator-default.payment.next.month,valid)
+
+```
+
+## Prune Tree
+```{r}
+ctt1 = tree(asLabel~.-Year-Movie-Ratings,train,mindev=0.03)
+# I change mindev from 0.01 to 0.9 to see the best performance. choose 0.03
+```
+
+## Plot tree
+```{r}
+plot(ctt1)
+text(ctt1)
+summary(ctt1)
+ctt1
+```
+## Predict (below with the train and validation set)
+```{r}
+PredLabel = predict(ctt1,train,type="class")
+PredTreeScore = data.frame(predict(ctt1,train,type="vector"))
+train = data.frame(train,PredLabel,PredTreeScore)
+
+## valid
+PredLabelValid = predict(ctt1,valid,type="class")
+PredTreeScoreValid = data.frame(predict(ctt1,valid,type="vector"))
+valid = data.frame(valid,PredLabelValid,PredTreeScoreValid)
+```
+
+## Give out the validation error rate, which is 0.426, not bad.
+```{r}
+tablev = table(valid$PredLabelValid,valid$asLabel)
+error_valid = 1 - sum(diag(tablev)) / sum(tablev)
+error_valid
+```
+## Gains
+```{r}
+print(train$asLabel)
+print(PredTreeScore)
+library(gains)
+gtt = gains(actual=train$asLabel,predicted=PredTreeScore,optimal=TRUE)
+cpt_y = gtt$cume.pct.of.total
+cpt_x = gtt$depth
+
+## validation
+# gtv = gains(actual=valid$asLabel,predicted=valid$PredTreeScoreValid,optimal=TRUE)
+# cpv_y = gtv$cume.pct.of.total
+# cpv_x = gtv$depth
+```
+
+
+
+
+
+
+

@@ -167,7 +167,7 @@ yyv = prepend(yyv,0,before=1)
 fitv = lm(yyv~poly(xxv,3,raw=TRUE))
 xxv = 0:300
 model_yyv = predict(fitv,data.frame(xxv))
-png("CT_lift_chart_valid.png")
+png("../figures/CT_lift_chart_valid.png")
 plot(xxv, model_yyv, col="green",xlab="Number of total data", ylab="Cumulative number of target data")
 best_yyv = rep(predictedValid1,301)
 for(i in 0:predictedValid1){

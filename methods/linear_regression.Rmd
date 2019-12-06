@@ -14,8 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # data load
 
 ```{r}
-train.df <- read.csv("../data/train.csv", header = T)
-test.df <- read.csv("../data/test.csv", header = T)
+train.df <- na.omit(read.csv("../data/train.csv", header = T))
+test.df <- na.omit(read.csv("../data/test.csv", header = T))
 train.df$Genre = as.factor(train.df$Genre)
 train.df$Sequel = as.factor(train.df$Sequel)
 test.df$Genre = factor(test.df$Genre, levels = levels(train.df$Genre))

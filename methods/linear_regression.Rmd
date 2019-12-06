@@ -1,0 +1,51 @@
+---
+title: "regression"
+author: "Chong Hu"
+date: "12/6/2019"
+output: html_document
+---
+
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# data load
+
+```{r}
+train.df <- read.csv("../data/train.csv", header = T)
+test.df <- read.csv("../data/test.csv", header = T)
+conventional_train.df = na.omit(train.df[, c("Ratings", "Genre", "Gross", "Budget", "Screens", "Sequel")])
+conventional_test.df = na.omit(test.df[, c("Ratings", "Genre", "Gross", "Budget", "Screens", "Sequel")])
+socialmedia_train.df = na.omit(train.df[, c("Ratings", "Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers")])
+socialmedia_test.df = na.omit(test.df[, c("Ratings", "Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers")])
+```
+
+# simple linear regression
+
+Just start regression, not the final model
+
+## Conventional features
+
+```{r}
+conventional.lm = lm(Ratings ~ ., data = conventional_train.df)
+conventional.pred = predict(conventional.lm, conventional_test.df)
+mean((conventional.pred - conventional_test.df$Ratings)^2)
+```
+
+```{r}
+summary(conventional.lm)
+```
+
+## Soical Media features
+
+```{r}
+socialmedia.lm = lm(Ratings ~ ., data = socialmedia_train.df)
+socialmedia.pred = predict(socialmedia.lm, socialmedia_test.df)
+mean((socialmedia.pred - socialmedia_test.df$Ratings)^2)
+```
+
+```{r}
+summary(socialmedia.lm)
+```

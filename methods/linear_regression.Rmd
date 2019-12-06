@@ -16,6 +16,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 train.df <- read.csv("../data/train.csv", header = T)
 test.df <- read.csv("../data/test.csv", header = T)
+train.df$Genre = as.factor(train.df$Genre)
+train.df$Sequel = as.factor(train.df$Sequel)
+test.df$Genre = factor(test.df$Genre, levels = levels(train.df$Genre))
+test.df$Sequel = factor(test.df$Sequel, levels = levels(train.df$Sequel))
 conventional_train.df = na.omit(train.df[, c("Ratings", "Genre", "Gross", "Budget", "Screens", "Sequel")])
 conventional_test.df = na.omit(test.df[, c("Ratings", "Genre", "Gross", "Budget", "Screens", "Sequel")])
 socialmedia_train.df = na.omit(train.df[, c("Ratings", "Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers")])
@@ -30,7 +34,7 @@ Just start regression, not the final model
 
 ```{r}
 conventional.lm = lm(Ratings ~ ., data = conventional_train.df)
-conventional.pred = predict(conventional.lm, conventional_test.df)
+conventional.pred = predict(conventional.lm, conventional_test.df, type="response")
 mean((conventional.pred - conventional_test.df$Ratings)^2)
 ```
 
@@ -49,3 +53,5 @@ mean((socialmedia.pred - socialmedia_test.df$Ratings)^2)
 ```{r}
 summary(socialmedia.lm)
 ```
+
+

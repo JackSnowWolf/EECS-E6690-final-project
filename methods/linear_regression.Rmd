@@ -66,6 +66,23 @@ summary(conventional.lm)
 plot(conventional.lm)
 ```
 
+```{r}
+library(dplyr)
+library(tidyr)
+library(caret)
+library(ggplot2)
+# confusion matrix
+pred = factor(conventional.pred)
+levels(pred)
+truth = factor(conventional_test.df$asLabel)
+levels(truth)
+input.mat = as.matrix(confusionMatrix(pred, truth))
+normalized.mat = sweep(input.mat, 2, colSums(input.mat), "/" )
+melt.mat <- melt(normalized.mat)
+ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Confusion Matrix of  linear regression for conventional features") +
+  xlab("Prediction") + ylab("truth") + labs(fill = "frequency")
+```
 ## Soical Media features
 
 ```{r}

@@ -1,5 +1,5 @@
 ---
-title: "NaiveBayesianClassification"
+title: "Naive_Bayesian_Classification"
 author: "hz2619"
 date: "12/8/2019"
 output: html_document

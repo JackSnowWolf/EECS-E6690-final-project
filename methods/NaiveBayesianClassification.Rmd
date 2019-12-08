@@ -65,6 +65,7 @@ summary(predict(NBclassfier, newdata = train))
 ```
 ```{r}
 library(naivebayes)
+library(ggplot2)
 
 printALL=function(model){
   trainPred=predict(model, newdata = train, type = "class")
@@ -84,3 +85,36 @@ printALL=function(model){
 newNBclassifier=naive_bayes(asLabel ~ Genre+Gross+Budget+Screens+Sequel+Sentiment+Views+Likes+Dislikes+Comments+Aggregate.Followers,usekernel=T, data=train)
 printALL(newNBclassifier)
 ```
+## Confusion Matrix of Train dataset
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+library(reshape2)
+
+NB_train_predict <- predict(NBclassfier, newdata = train)
+NB_test_predict  <- predict(NBclassfier, newdata = test)
+cfm_train <- confusionMatrix(NB_train_predict,train$asLabel)
+cfm_test  <- confusionMatrix(NB_test_predict,test$asLabel)
+input.mat.train = as.matrix(cfm_train)
+normalized.mat.train = sweep(input.mat.train, 2, colSums(input.mat.train), "/" )
+melt.mat.train <- melt(normalized.mat.train)
+ggplot(data = melt.mat.train, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Train DatasetConfusion Matrix of NaiveBayesian") +
+  xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
+```
+## Confusion Matrix of Test dataset
+```{r}
+input.mat.test = as.matrix(cfm_test)
+normalized.mat.test = sweep(input.mat.test, 2, colSums(input.mat.test), "/" )
+melt.mat.test <- melt(normalized.mat.test)
+ggplot(data = melt.mat.test, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Test Dataset Confusion Matrix of NaiveBayesian") +
+  xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
+cfm_test
+```
+```{r}
+cfm_test
+```
+

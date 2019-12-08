@@ -58,8 +58,29 @@ summary(test)
 ```{r}
 library(caret)
 library(e1071)
-NBclassfier = naiveBayes(asLabel ~ Genre+Gross+Budget+Screens+Sequel+Sentiment, data = train)
+NBclassfier = naiveBayes(asLabel ~ Genre+Gross+Budget+Screens+Sequel+Sentiment+Views+Likes+Dislikes+Comments+Aggregate.Followers, data = train)
 print(NBclassfier)
-predict(NBclassfier, newdata = test)
-summary(predict(NBclassfier, newdata = test))
+predict(NBclassfier, newdata = train)
+summary(predict(NBclassfier, newdata = train))
+```
+```{r}
+library(naivebayes)
+
+printALL=function(model){
+  trainPred=predict(model, newdata = train, type = "class")
+  trainTable=table(train$asLabel, trainPred)
+  testPred=predict(NBclassfier, newdata=test, type="class")
+  testTable=table(test$asLabel, testPred)
+  trainAcc=(trainTable[1,1]+trainTable[2,2]+trainTable[3,3])/sum(trainTable)
+  testAcc=(testTable[1,1]+testTable[2,2]+testTable[3,3])/sum(testTable)
+  message("Contingency Table for Training Data")
+  print(trainTable)
+  message("Contingency Table for Test Data")
+  print(testTable)
+  message("Accuracy")
+  print(round(cbind(trainAccuracy=trainAcc, testAccuracy=testAcc),3))
+}
+
+newNBclassifier=naive_bayes(asLabel ~ Genre+Gross+Budget+Screens+Sequel+Sentiment+Views+Likes+Dislikes+Comments+Aggregate.Followers,usekernel=T, data=train)
+printALL(newNBclassifier)
 ```

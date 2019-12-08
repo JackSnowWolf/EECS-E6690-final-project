@@ -1,6 +1,6 @@
 # EECS-E6690-final-project
 
-Final project for EEC E6690 Statistical learning @ Columbia University
+Final project for EECS E6690 Statistical learning @ Columbia University
 
 ## Introduction
 

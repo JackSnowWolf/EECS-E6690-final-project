@@ -17,6 +17,7 @@ This is an R Markdown document.
 library("readxl")
 data1 = read_excel("../data/1415CSM_dataset.xlsx")
 i=1
+data1=na.omit(data1)
 asLabel=""
 for (val in data1$Ratings) {
   if(val<=4.9){
@@ -40,6 +41,7 @@ train_idx = sample(datasize, datasize*0.8)
 indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
 data1 = data.frame(data1,indicator1)
+print(data1)
 ```
 
 ## Decision Tree
@@ -55,7 +57,7 @@ ctt1 = tree(asLabel~.-Year-Movie-Ratings,train)
 
 ## Prune Tree
 ```{r}
-ctt1 = tree(asLabel~.-Year-Movie-Ratings,train,mindev=0.03)
+ctt1 = tree(asLabel~.-Year-Movie-Ratings,train,mindev=0.01)
 # I change mindev from 0.01 to 0.9 to see the best performance. choose 0.03
 ```
 
@@ -65,6 +67,12 @@ plot(ctt1)
 text(ctt1)
 summary(ctt1)
 ctt1
+```
+```{r}
+library(rpart)
+library(rpart.plot)
+pretty_tree=rpart(asLabel~.-Year-Movie-Ratings,data=train,cp=0.00001)
+rpart.plot(pretty_tree,box.palette = "RdBu",shadow.col = "gray",nn=TRUE)
 ```
 ## Predict (below with the train and validation set)
 ```{r}
@@ -84,82 +92,98 @@ tablev1 = table(valid$PredLabelValid1,valid$asLabel)
 error_valid1 = 1 - sum(diag(tablev1)) / sum(tablev1)
 error_valid1
 ```
-## Gains
+
+## The following code block is lable_tran_num function. We may use it.
 ```{r}
 # # train
-print(asLabel)
+# print(train$asLabel)
 # print(train$Ratings)
-print(PredTreeScore1)
-# print(PredTreeScore1$Poor)
-# print(PredTreeScore1$Average)
-# print(PredTreeScore1$Good)
-
+# print(PredTreeScore1)
+# print(train$asLabel_d)
 # label2point=0;
+
 # n=1
 # for (m in train$asLabel) {
 #   if(identical(m,"Poor")){
-#     label2point[n]=4.9
+#     label2point[n]=1
 #   }else if(identical(m,"Average")){
-#     label2point[n]=6.4
+#     label2point[n]=2
 #   }else if(identical(m,"Good")){
-#     label2point[n]=8.9
+#     label2point[n]=3
 #   }else if(identical(m,"Excellent")){
-#     label2point[n]=10
+#     label2point[n]=4
 #   }
 #   n=n+1
 # }
 # print(label2point)
-
-# train_res=(PredTreeScore1$Poor)*4.9+(PredTreeScore1$Average)*6.4+(PredTreeScore1$Good)*8.9
-# print(train_res)
-train_res_label=""
-n=1
-for (m in train_res) {
-  if((PredTreeScore1$Poor)>0.5){
-    train_res_label[n]="Poor"
-  }else if((PredTreeScore1$Average)>0.5){
-    train_res_label[n]="Average"
-  }else if((PredTreeScore1$Good)>0.5){
-    train_res_label[n]="Good"
-  }
-  n=n+1
-}
-print(train_res_label)
+# 
+# label2point_valid=0;
+# q=1
+# for (p in valid$asLabel) {
+#   if(identical(p,"Poor")){
+#     label2point_valid[q]=1
+#   }else if(identical(p,"Average")){
+#     label2point_valid[q]=2
+#   }else if(identical(p,"Good")){
+#     label2point_valid[q]=3
+#   }else if(identical(p,"Excellent")){
+#     label2point_valid[q]=4
+#   }
+#   q=q+1
+# }
+# print(label2point_valid)
+# # train_res=(PredTreeScore1$Poor)*4.9+(PredTreeScore1$Average)*6.4+(PredTreeScore1$Good)*8.9
+# # print(train_res)
+# 
+# train_res_label=1:184
+# n=1
+# for (m in 1:184) {
+#   if((PredTreeScore1[m,]$Poor)>0.5){
+#     train_res_label[n]=1
+#   }else if((PredTreeScore1[m,]$Average)>0.5){
+#     train_res_label[n]=2
+#   }else if((PredTreeScore1[m,]$Good)>0.5){
+#     train_res_label[n]=3
+#   }
+#   n=n+1
+# }
+# print(train_res_label)
+# 
+# val_res_label=1:47
+# n=1
+# for (m in 1:47) {
+#   if((PredTreeScoreValid1[m,]$Poor)>0.5){
+#     val_res_label[n]=1
+#   }else if((PredTreeScoreValid1[m,]$Average)>0.5){
+#     val_res_label[n]=2
+#   }else if((PredTreeScoreValid1[m,]$Good)>0.5){
+#     val_res_label[n]=3
+#   }
+#   n=n+1
+# }
+# # print(train_res_label)
+# print(val_res_label)
 ```
 
 
 ```{r}
-# gtt = gains(actual=train$asLabel,predicted=PredTreeScore1,optimal=TRUE)
-gtt = gains(actual=label2point,
-            predicted=(PredTreeScore1$Poor)*4.9+(PredTreeScore1$Average)*6.4+(PredTreeScore1$Good)*8.9,
-            optimal=TRUE)
-cpt_y = gtt$cume.pct.of.total
-cpt_x = gtt$depth
-
-# # validation
-label2point_valid=0;
-q=1
-for (p in valid$asLabel) {
-  if(identical(p,"Poor")){
-    label2point_valid[q]=4.9
-  }else if(identical(p,"Average")){
-    label2point_valid[q]=6.4
-  }else if(identical(p,"Good")){
-    label2point_valid[q]=8.9
-  }else if(identical(p,"Excellent")){
-    label2point_valid[q]=10
-  }
-  q=q+1
-}
-print(label2point_valid)
-print((PredTreeScoreValid1$Poor)*4.9+(PredTreeScoreValid1$Average)*6.4+(PredTreeScoreValid1$Good)*8.9)
-
-# gtv = gains(actual=valid$asLabel,predicted=valid$PredTreeScoreValid,optimal=TRUE)
-gtv = gains(actual=label2point_valid,
-            predicted=(PredTreeScoreValid1$Poor)*4.9+(PredTreeScoreValid1$Average)*6.4+(PredTreeScoreValid1$Good)*8.9,
-            optimal=TRUE)
-cpv_y = gtv$cume.pct.of.total
-cpv_x = gtv$depth
+# # gtt = gains(actual=train$asLabel,predicted=PredTreeScore1,optimal=TRUE)
+# library("gains")
+# gtt = gains(actual=label2point,
+#             predicted=train_res_label,
+#             optimal=TRUE)
+# cpt_y = gtt$cume.pct.of.total
+# cpt_x = gtt$depth
+# # 
+# # # validation
+# 
+# # print((PredTreeScoreValid1$Poor)*4.9+(PredTreeScoreValid1$Average)*6.4+(PredTreeScoreValid1$Good)*8.9)
+# # 
+# gtv = gains(actual=label2point_valid,
+#             predicted=val_res_label,
+#             optimal=TRUE)
+# cpv_y = gtv$cume.pct.of.total
+# cpv_x = gtv$depth
 ```
 
 

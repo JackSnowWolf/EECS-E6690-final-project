@@ -103,6 +103,7 @@ melt.mat.train <- melt(normalized.mat.train)
 ggplot(data = melt.mat.train, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile() + ggtitle("Train DatasetConfusion Matrix of NaiveBayesian") +
   xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
+cfm_train
 ```
 ## Confusion Matrix of Test dataset
 ```{r}
@@ -114,7 +115,5 @@ ggplot(data = melt.mat.test, aes(x=Var1, y=Var2, fill=value)) +
   xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
 cfm_test
 ```
-```{r}
-cfm_test
-```
+
 

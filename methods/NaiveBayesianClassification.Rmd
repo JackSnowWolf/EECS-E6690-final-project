@@ -39,7 +39,7 @@ data1
 
 ## split the whole dataset into train and test dataset (80% : 20%)
 ```{r}
-set.seed(10) ## Randomize
+set.seed(10) ## Randomize set.seed to 10
 data1 = data.frame(data1,asLabel)
 datasize = dim(data1)[1]
 train_idx = sample(datasize, datasize*0.8)

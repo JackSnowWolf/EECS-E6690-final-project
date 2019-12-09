@@ -1,0 +1,106 @@
+---
+title: "all"
+author: "Wenjie Chen"
+date: "12/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. 
+
+```{r}
+library("readxl")
+data = read_excel("../data/1415CSM_dataset.xlsx")
+i=1
+data=na.omit(data)
+asLabel=""
+for (val in data$Ratings) {
+  if(val<=4.9){
+    asLabel[i]="Poor"
+  }else if(val<=6.4){
+    asLabel[i]="Average"
+  }else if(val<=8.9){
+    asLabel[i]="Good"
+  }else if(val<=10){
+    asLabel[i]="Excellent"
+  }
+  i=i+1
+}
+# print(asLabel)
+data = data.frame(data1,asLabel)
+# print(data1)
+set.seed(10)
+datasize = dim(data)[1]
+train_idx = sample(datasize, datasize*0.8)
+
+indicator1 = rep(0,datasize)
+indicator1[train_idx] = 1 # 1:train 0:valid
+data = data.frame(data1,indicator1)
+print(data)
+
+data1$asLabel <- as.factor(data$asLabel)
+sampleind <- sample(2, nrow(data), replace = T, prob = c(0.7, 0.3))
+data.train <- data[sampleind == 1,]
+data.test <- data[sampleind == 2,]
+```
+# dst
+```{r}
+library(tree)
+model.tree <- tree(asLabel~.-Year-Movie-Ratings, data = data.train)
+summary(model.tree)
+plot(model.tree)
+text(model.tree)
+pred.tree <- predict(model.tree, newdata=data.test, type = "class")
+table(pred.tree, data.test$asLabel)
+table=table(pred.tree, data.test$asLabel)
+
+error_valid1 = 1 - sum(diag(table)) / sum(table)
+error_valid1
+```
+# svm
+```{r}
+library(e1071)
+svmfit.linear <- svm(asLabel~.-Year-Movie-Ratings, data = data.train, kernel = "linear")
+svmfit.radial <- svm(asLabel~.-Year-Movie-Ratings, data = data.train, kernel = "radial")
+pred.svm.linear <- predict(svmfit.linear, newdata=data.test)
+table(pred.svm.linear, data.test$asLabel)
+pred.svm.radial <- predict(svmfit.radial, newdata=data.test)
+table(pred.svm.radial, data.test$asLabel)
+
+table_smv1=table(pred.svm.linear, data.test$asLabel)
+table_smv2=table(pred.svm.radial, data.test$asLabel)
+error_valid_svm1 = 1 - sum(diag(table_smv1)) / sum(table_smv1)
+error_valid_svm2 = 1 - sum(diag(table_smv2)) / sum(table_smv2)
+error_valid_svm1
+error_valid_svm2
+```
+# Logistic Regression
+```{r}
+#Classi=ifelse(Class==2,0,1)
+#data=data.frame(data,Classi)
+glm.fits=glm(asLabel~.-Year-Movie-Ratings,data=data.train,family=binomial)
+glm.pred=predict(glm.fits,newdata=data.test,type="response")
+glm.predict_class <- ifelse(glm.pred>0.5,1,0)
+table(glm.predict_class,data.test$asLabel)
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```

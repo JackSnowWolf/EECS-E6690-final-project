@@ -89,6 +89,10 @@ PredTreeScoreValid1 = data.frame(predict(ctt1,valid,type="vector"))
 valid = data.frame(valid,PredLabelValid1,PredTreeScoreValid1)
 ```
 
+```{r}
+# print(valid$PredLabelValid1)
+# print(valid$asLabel)
+```
 ## Give out the validation error rate
 ```{r}
 tablev1 = table(valid$PredLabelValid1,valid$asLabel)

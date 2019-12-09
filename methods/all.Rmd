@@ -1,5 +1,5 @@
 ---
-title: "all"
+title: "all without separating"
 author: "Wenjie Chen"
 date: "12/8/2019"
 output: html_document
@@ -81,24 +81,25 @@ error_valid_svm2
 ```
 # Logistic Regression
 ```{r}
-#Classi=ifelse(Class==2,0,1)
-#data=data.frame(data,Classi)
-glm.fits=glm(asLabel~.-Year-Movie-Ratings,data=data.train,family=binomial)
-glm.pred=predict(glm.fits,newdata=data.test,type="response")
-glm.predict_class <- ifelse(glm.pred>0.5,1,0)
-table(glm.predict_class,data.test$asLabel)
+# #Classi=ifelse(Class==2,0,1)
+# #data=data.frame(data,Classi)
+# glm.fits=glm(asLabel~.-Year-Movie-Ratings,data=data.train,family=binomial)
+# glm.pred=predict(glm.fits,newdata=data.test)
+# glm.predict_class <- ifelse(glm.pred>0.5,1,0)
+# table(glm.predict_class,data.test$asLabel)
 ```
-
+# Random Forest
 ```{r}
+library(randomForest)
+#attach(data)
+bag.fit=randomForest(asLabel~.-Year-Movie-Ratings,data=data.train,mtry=3)
+bag.pred = predict(bag.fit,newdata = data.test)
+table(bag.pred,data.test$asLabel)
 
-```
+table_RF=table(bag.pred,data.test$asLabel)
 
-```{r}
-
-```
-
-```{r}
-
+error_valid_RF = 1 - sum(diag(table_RF)) / sum(table_RF)
+error_valid_RF
 ```
 
 ```{r}

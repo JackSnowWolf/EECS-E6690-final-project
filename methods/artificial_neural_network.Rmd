@@ -31,8 +31,15 @@ for (val in data1$Ratings) {
   }
   i=i+1
 }
+# print(data1)
+
+# normalization
+scaled.dat <- scale(data1[,4:14])
+
 # print(asLabel)
-data1 = data.frame(data1,asLabel)
+# print(scaled.dat)
+data1 = data.frame(scaled.dat,asLabel)
+
 # print(data1)
 set.seed(10)
 datasize = dim(data1)[1]
@@ -42,7 +49,73 @@ indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
 data1 = data.frame(data1,indicator1)
 print(data1)
+train = subset(data1,data1$indicator1==1)
+valid = subset(data1,data1$indicator1==0)
+```
+# set up ANN formula
+```{r}
+names = names(train)
+f <- as.formula(paste("asLabel ~", paste(names[!names %in% c("asLabel","indicator1")], collapse = " + ")))
 ```
 
+# use nn
+```{r}
+library(nnet)
+set.seed(12)
+targets <- class.ind(train$asLabel)
+#net <- nnet(f, data = train_norm, size = 5, rang=0.2, decay=5e-4, maxit = 200)
+net <- nnet(f, data = train, size = 6, rang=0.2, decay=5e-4, maxit = 250,skip=1)
+```
+```{r}
+print(pred1)
+print(train_res_label)
+print(train$asLabel)
+```
+
+```{r}
+# train
+pred = predict(net, train)
+pred1=round(pred)
+# print(pred1)
+train_res_label=""
+n=1
+for (m in 1:(length(pred1)/3)) {
+  if((pred1[m,1])>0.5){
+    train_res_label[n]="Poor"
+  }else if((pred1[m,2])>0.5){
+    train_res_label[n]="Average"
+  }else if((pred1[m,3])>0.5){
+    train_res_label[n]="Good"
+  }
+  n=n+1
+}
+train_res_label=as.factor(train_res_label)
+print(train_res_label)
+print(train$asLabel)
+tt = table(pred = train_res_label, actual = train$asLabel)
+error_train = 1 - sum(diag(tt)) / sum(tt)
+
+# valid
+predV = predict(net, valid)
+pred2=round(predV)
+valid_res_label=""
+n=1
+for (m in 1:(length(pred2)/3)) {
+  if((pred2[m,1])>0.5){
+    valid_res_label[n]="Poor"
+  }else if((pred2[m,2])>0.5){
+    valid_res_label[n]="Average"
+  }else if((pred2[m,3])>0.5){
+    valid_res_label[n]="Good"
+  }
+  n=n+1
+}
+valid_res_label=as.factor(valid_res_label)
+tv = table(pred =valid_res_label, actual = valid$asLabel)
+error_valid = 1 - sum(diag(tv)) / sum(tv)
+
+error_train
+error_valid
+```
 
 

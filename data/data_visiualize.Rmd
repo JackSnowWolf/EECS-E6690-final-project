@@ -19,7 +19,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=7.2){
+  }else if(val<=7.5){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"

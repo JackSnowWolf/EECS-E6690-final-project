@@ -36,7 +36,7 @@ data1 = data.frame(data1,asLabel)
 # print(data1)
 set.seed(10)
 datasize = dim(data1)[1]
-train_idx = sample(datasize, datasize*0.8)
+train_idx = sample(datasize, datasize*0.9)
 
 indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
@@ -46,18 +46,21 @@ print(data1)
 
 ## Decision Tree
 ```{r}
+# library(RWeka)
+# library(party)
+
 library(tree)
 train = subset(data1,data1$indicator1==1)
 valid = subset(data1,data1$indicator1==0)
 
 ctt1 = tree(asLabel~.-Year-Movie-Ratings,train)
-#ctv = tree(High~.-X.U.FEFF.ID-indicator-default.payment.next.month,valid)
-
+# ctt1 = J48(asLabel~.-Year-Movie-Ratings,train)
+# if(require("party", quietly = TRUE)) plot(m1)
 ```
 
 ## Prune Tree
 ```{r}
-ctt1 = tree(asLabel~.-Year-Movie-Ratings,train,mindev=0.01)
+ctt1 = tree(asLabel~.-Year-Movie-Ratings,train,mindev=0.03)
 # I change mindev from 0.01 to 0.9 to see the best performance. choose 0.03
 ```
 
@@ -71,7 +74,7 @@ ctt1
 ```{r}
 library(rpart)
 library(rpart.plot)
-pretty_tree=rpart(asLabel~.-Year-Movie-Ratings,data=train,cp=0.00001)
+pretty_tree=rpart(asLabel~.-Year-Movie-Ratings,data=train,cp=0.001)
 rpart.plot(pretty_tree,box.palette = "RdBu",shadow.col = "gray",nn=TRUE)
 ```
 ## Predict (below with the train and validation set)
@@ -86,11 +89,12 @@ PredTreeScoreValid1 = data.frame(predict(ctt1,valid,type="vector"))
 valid = data.frame(valid,PredLabelValid1,PredTreeScoreValid1)
 ```
 
-## Give out the validation error rate, which is 0.426, not bad.
+## Give out the validation error rate
 ```{r}
 tablev1 = table(valid$PredLabelValid1,valid$asLabel)
 error_valid1 = 1 - sum(diag(tablev1)) / sum(tablev1)
 error_valid1
+print(tablev1)
 ```
 
 ## The following code block is lable_tran_num function. We may use it.

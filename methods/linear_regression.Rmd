@@ -14,16 +14,63 @@ knitr::opts_chunk$set(echo = TRUE)
 # data load
 
 ```{r}
-train.df <- na.omit(read.csv("../data/train.csv", header = T))
-test.df <- na.omit(read.csv("../data/test.csv", header = T))
-train.df$Genre = as.factor(train.df$Genre)
-train.df$Sequel = as.factor(train.df$Sequel)
-test.df$Genre = factor(test.df$Genre, levels = levels(train.df$Genre))
-test.df$Sequel = factor(test.df$Sequel, levels = levels(train.df$Sequel))
-conventional_train.df = na.omit(train.df[, c("Ratings", "Genre", "Gross", "Budget", "Screens", "Sequel")])
-conventional_test.df = na.omit(test.df[, c("Ratings", "Genre", "Gross", "Budget", "Screens", "Sequel")])
-socialmedia_train.df = na.omit(train.df[, c("Ratings", "Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers")])
-socialmedia_test.df = na.omit(test.df[, c("Ratings", "Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers")])
+library("readxl")
+data1 = read_excel("../data/1415CSM_dataset1.xlsx")
+i=1
+asLabel=""
+for (val in data1$Ratings) {
+  if(val<=4.9){
+    asLabel[i]="Poor"
+  }else if(val<=6.4){
+    asLabel[i]="Average"
+  }else if(val<=7.5){
+    asLabel[i]="Good"
+  }else if(val<=10){
+    asLabel[i]="Excellent"
+  }
+  i=i+1
+}
+# print(asLabel)
+data1 = data.frame(data1,asLabel)
+# print(data1)
+set.seed(10)
+datasize = dim(data1)[1]
+train_idx = sample(datasize, datasize*0.8)
+
+indicator1 = rep(0,datasize)
+indicator1[train_idx] = 1 # 1:train 0:valid
+data1 = na.omit(data.frame(data1,indicator1))
+data1$Genre = as.factor(data1$Genre)
+data1$Sequel = as.factor(data1$Sequel)
+```
+
+```{r}
+train.df = subset(data1,data1$indicator1==1)
+test.df = subset(data1,data1$indicator1==0)
+```
+
+
+
+```{r}
+num2factor <- function(val)
+{
+  if(val<=4.9){
+    return("Poor")
+  }else if(val<=6.4){
+    return("Average")
+  }else if(val<=8.9){
+    return("Good")
+  }else if(val<=10){
+    return("Excellent")
+  }
+}
+```
+
+```{r}
+conventional_train.df = train.df[, c("Ratings", "Genre", "Gross", "Budget", "Screens", "Sequel")]
+conventional_test.df = test.df[, c("Ratings", "Genre", "Gross", "Budget", "Screens", "Sequel")]
+socialmedia_train.df = train.df[, c("Ratings", "Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers")]
+socialmedia_test.df = test.df[, c("Ratings", "Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers")]
 ```
 
 # simple linear regression
@@ -39,7 +86,7 @@ num2factor <- function(val)
     return("Poor")
   }else if(val<=6.4){
     return("Average")
-  }else if(val<=8.9){
+  }else if(val<=7.5){
     return("Good")
   }else if(val<=10){
     return("Excellent")

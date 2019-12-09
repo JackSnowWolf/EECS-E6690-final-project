@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # data load
 ```{r}
 library("readxl")
-data1 = read_excel("../data/1415CSM_dataset.xlsx")
+data1 = read_excel("../data/1415CSM_dataset1.xlsx")
 i=1
 asLabel=""
 for (val in data1$Ratings) {
@@ -21,7 +21,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=8.9){
+  }else if(val<=7.5){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -78,7 +78,7 @@ socialmedia_test.df = test.df[, c("asLabel", "Sentiment", "Views", "Likes", "Dis
 ```{r}
 library(randomForest)
 conventional.mod <- randomForest(asLabel ~., data = conventional_train.df, replace=T, importance=TRUE, 
-                      ntree=200)
+                      ntree=20)
 plot(conventional.mod)
 summary(conventional.mod)
 varImpPlot(conventional.mod)
@@ -118,7 +118,7 @@ ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) +
 
 ```{r}
 socialmedia.mod <- randomForest(asLabel ~., data = socialmedia_train.df, importance=TRUE, 
-                      ntree=2000)
+                      ntree=20)
 plot(socialmedia.mod)
 summary(socialmedia.mod)
 varImpPlot(socialmedia.mod)

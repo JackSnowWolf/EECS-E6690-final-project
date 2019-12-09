@@ -41,7 +41,7 @@ train_idx = sample(datasize, datasize*0.9)
 indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
 data1 = data.frame(data1,indicator1)
-print(data1)
+# print(data1)
 ```
 
 ## Decision Tree
@@ -60,7 +60,7 @@ ctt1 = tree(asLabel~.-Year-Movie-Ratings,train)
 
 ## Prune Tree
 ```{r}
-ctt1 = tree(asLabel~.-Year-Movie-Ratings,train,mindev=0.03)
+ctt1 = tree(asLabel~.-Year-Movie-Ratings,train,mindev=0.02)
 # I change mindev from 0.01 to 0.9 to see the best performance. choose 0.03
 ```
 

@@ -48,7 +48,7 @@ train_idx = sample(datasize, datasize*0.9)
 indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
 data1 = data.frame(data1,indicator1)
-print(data1)
+# print(data1)
 train = subset(data1,data1$indicator1==1)
 valid = subset(data1,data1$indicator1==0)
 ```
@@ -67,8 +67,8 @@ targets <- class.ind(train$asLabel)
 net <- nnet(f, data = train, size = 6, rang=0.2, decay=5e-4, maxit = 250,skip=1)
 ```
 ```{r}
-print(pred1)
-print(train_res_label)
+# print(pred1)
+# print(train_res_label)
 # print(train$asLabel)
 ```
 
@@ -91,7 +91,7 @@ for (m in 1:(length(pred1)/3)) {
 }
 train_res_label=as.factor(train_res_label)
 print(train_res_label)
-print(train$asLabel)
+# print(train$asLabel)
 tt = table(pred = train_res_label, actual = train$asLabel)
 error_train = 1 - sum(diag(tt)) / sum(tt)
 

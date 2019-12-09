@@ -2,7 +2,9 @@
 title: "all without separating"
 author: "Wenjie Chen"
 date: "12/8/2019"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -32,19 +34,19 @@ for (val in data$Ratings) {
   i=i+1
 }
 # print(asLabel)
-data = data.frame(data1,asLabel)
-# print(data1)
+data = data.frame(data,asLabel)
+# print(data)
 set.seed(10)
 datasize = dim(data)[1]
 train_idx = sample(datasize, datasize*0.8)
 
 indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
-data = data.frame(data1,indicator1)
-print(data)
+data = data.frame(data,indicator1)
+# print(data)
 
-data1$asLabel <- as.factor(data$asLabel)
-sampleind <- sample(2, nrow(data), replace = T, prob = c(0.7, 0.3))
+data$asLabel <- as.factor(data$asLabel)
+sampleind <- sample(2, nrow(data), replace = T, prob = c(0.8, 0.2))
 data.train <- data[sampleind == 1,]
 data.test <- data[sampleind == 2,]
 ```
@@ -102,6 +104,3 @@ error_valid_RF = 1 - sum(diag(table_RF)) / sum(table_RF)
 error_valid_RF
 ```
 
-```{r}
-
-```

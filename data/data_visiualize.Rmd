@@ -1,0 +1,162 @@
+---
+title: "Data Visiualization"
+author: "Chong HU"
+date: "12/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("readxl")
+data1 = read_excel("1415CSM_dataset.xlsx")
+i=1
+asLabel=""
+for (val in data1$Ratings) {
+  if(val<=4.9){
+    asLabel[i]="Poor"
+  }else if(val<=6.4){
+    asLabel[i]="Average"
+  }else if(val<=7.2){
+    asLabel[i]="Good"
+  }else if(val<=10){
+    asLabel[i]="Excellent"
+  }
+  i=i+1
+}
+# print(asLabel)
+data.df = data.frame(data1,asLabel)
+data.df = na.omit(data.df)
+data.df$Genre = as.factor(data.df$Genre)
+data.df$Sequel = as.factor(data.df$Sequel)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(forcats)
+gg <- ggplot(data.df, aes(x=log(Budget), y=Gross)) + 
+  geom_point(aes(col=asLabel, size=Genre)) + 
+  geom_smooth(method="loess", se=F) + 
+  labs(subtitle="Gross Vs Budget", 
+       y="Gross", 
+       x="Budget", 
+       title="Scatterplot", 
+       caption = "Source: conventional and soical media dataset")
+gg
+```
+
+```{r}
+p1 <-ggplot(data.df, aes(x=Ratings)) +
+  geom_histogram(aes(y=..density..), colour="grey", alpha=0.5)+
+  geom_density(alpha=.4, fill="lightblue")+
+  xlab("") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+p2 <-ggplot(data.df, aes(y=Ratings))+
+  geom_boxplot(fill = "lightblue", color = "black") + 
+  coord_flip() +
+  theme_classic() +
+  xlab("") +
+  theme(axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+library(patchwork)
+p1 + p2 + plot_layout(nrow = 2, heights = c(5, 1))
+```
+
+```{r}
+gross_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=Gross, fill=asLabel)) + 
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(x="Label")
+gross_p
+
+
+```
+
+```{r}
+budget_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=Budget, fill=asLabel)) + 
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(x="Label")
+budget_p
+```
+
+
+```{r}
+screens_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=Screens, fill=asLabel)) + 
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(x="Label")
+screens_p
+```
+```{r}
+views_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=Views, fill=asLabel)) + 
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(x="Label")
+views_p
+```
+
+
+
+
+```{r}
+likes_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=log(Likes), fill=asLabel)) + 
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(x="Label")
+likes_p
+```
+
+```{r}
+dislike_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=log(Dislikes), fill=asLabel)) + 
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(x="Label")
+dislike_p
+```
+
+```{r}
+sentiment_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=Sentiment, fill=asLabel)) + 
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(x="Label")
+sentiment_p
+```
+```{r}
+comment_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=log(Comments), fill=asLabel)) + 
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(x="Label")
+comment_p
+```
+```{r}
+genre_p <- ggplot(data.df, aes(Genre, ..count..)) + 
+  geom_bar(aes(fill = factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent'))), position = "dodge")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(fill = "Label")
+genre_p
+```
+
+```{r}
+sequel_p <- ggplot(data.df, aes(Sequel, ..count..)) + 
+  geom_bar(aes(fill = factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent'))), position = "dodge")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 0, hjust = 1))+
+  labs(fill = "Label")
+sequel_p
+```
+

@@ -28,7 +28,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=8.9){
+  }else if(val<=7.2){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -69,7 +69,6 @@ summary(predict(NBclassfier_conventional, newdata = train))
 ```{r}
 library(naivebayes)
 library(ggplot2)
-
 printALL=function(model){
   trainPred=predict(model, newdata = train, type = "class")
   trainTable=table(train$asLabel, trainPred)
@@ -84,7 +83,6 @@ printALL=function(model){
   message("Accuracy")
   print(round(cbind(trainAccuracy=trainAcc, testAccuracy=testAcc),3))
 }
-
 newNBclassifier_conventional=naive_bayes(asLabel ~ Genre+Budget+Screens+Sequel+Gross,usekernel=T, data=train)
 printALL(newNBclassifier_conventional)
 ```

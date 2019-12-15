@@ -35,21 +35,23 @@ When you click the **Knit** button a document will be generated that includes bo
 ## import xlsx and make label
 ```{r}
 library(readxl)
+
 data1 <- read_xlsx("../data/1415CSM_dataset.xlsx")
 i=1
 asLabel=""
 for (val in data1$Ratings) {
-  if(val<=4.9){
+  if(val<=5.2){
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=8.9){
+  }else if(val<=7.2){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
   }
   i=i+1
 }
+data1 <- scale(data1[,4:14])
 data1 = data.frame(data1,asLabel)
 data1 
 ```
@@ -75,7 +77,7 @@ library(ggplot2)
 library(scales)
 library(reshape2)
 library(e1071)
-svm_conventional <-svm(asLabel ~ Genre+Budget+Screens+Sequel+Gross, data = train,kernel = "linear")
+svm_conventional <-svm(asLabel ~ Genre+Budget+Screens+Sequel+Gross, data = train,kernel = "polynomial",gemma = 0.9, coef0 = 3, degree = 4) ## hyperplane
 pred.svm.conventinoal <- predict(svm_conventional,newdata = test)
 test = na.omit(test) ### delete NA !!!!!!
 cfm_svm_conventional <- confusionMatrix(pred.svm.conventinoal,test$asLabel)
@@ -95,11 +97,11 @@ library(ggplot2)
 library(scales)
 library(reshape2)
 library(e1071)
-svm_social_media <-svm(asLabel ~ Aggregate.Followers+Sentiment+Views+Likes+Dislikes+Comments, data = train,kernel = "linear")
+svm_social_media <-svm(asLabel ~ Aggregate.Followers+Sentiment+Views+Likes+Dislikes+Comments, data = train,kernel = "polynomial",coef0 = 4) ### hyperplane
 pred.svm.social_media <- predict(svm_social_media,newdata = test)
 test = na.omit(test) ### delete NA !!!!!!
 cfm_svm_social_media <- confusionMatrix(pred.svm.social_media,test$asLabel)
-input.mat.test_social_media = as.matrix(cfm_svm_social_media)
+input.mat.test_social_media = as.matrix(cfm_svm_conventional)
 normalized.mat.test_social_media = sweep(input.mat.test_social_media, 2, colSums(input.mat.test_social_media), "/" )
 melt.mat.test_social_media <- melt(normalized.mat.test_social_media)
 ggplot(data = melt.mat.test_social_media, aes(x=Var1, y=Var2, fill=value)) + 

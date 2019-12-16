@@ -24,7 +24,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=8.9){
+  }else if(val<=7.5){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -36,7 +36,7 @@ data1 = data.frame(data1,asLabel)
 # print(data1)
 set.seed(10)
 datasize = dim(data1)[1]
-train_idx = sample(datasize, datasize*0.9)
+train_idx = sample(datasize, datasize*0.8)
 
 indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
@@ -48,7 +48,7 @@ data1 = data.frame(data1,indicator1)
 ## Decision Tree
 ```{r}
 library(RWeka)
-# library(party)
+library(party)
 
 library(tree)
 train = subset(data1,data1$indicator1==1)
@@ -71,7 +71,7 @@ ctt1 = J48(asLabel~.-Ratings,conventional_train.df)
 ## 2
 ```{r}
 # ctt2 = tree(asLabel~.-Ratings,socialmedia_train.df)
-ctt1 = J48(asLabel~.-Ratings,conventional_train.df)
+ctt2 = J48(asLabel~.-Ratings,socialmedia_train.df)
 # if(require("party", quietly = TRUE)) plot(m1)
 ```
 
@@ -85,21 +85,21 @@ ctt1 = J48(asLabel~.-Ratings,conventional_train.df)
 ## Prune Tree 2
 ```{r}
 # ctt2 = tree(asLabel~.-Ratings,socialmedia_train.df,mindev=0.01)
-ctt1 = J48(asLabel~.-Ratings,conventional_train.df)
+ctt2 = J48(asLabel~.-Ratings,socialmedia_train.df)
 # I change mindev from 0.01 to 0.9 to see the best performance. choose 0.03
 ```
 
 ## Plot tree
 ```{r}
 plot(ctt1)
-text(ctt1)
+# text(ctt1)
 summary(ctt1)
 ctt1
 ```
 ## Plot tree2
 ```{r}
 plot(ctt2)
-text(ctt2)
+# text(ctt2)
 summary(ctt2)
 ctt2
 ```
@@ -124,25 +124,64 @@ rpart.plot(pretty_tree2,box.palette = "RdBu",shadow.col = "gray",nn=TRUE)
 ## Predict 1 (below with the train and validation set)
 ```{r}
 PredLabel1 = predict(ctt1,conventional_train.df,type="class")
-PredTreeScore1 = data.frame(predict(ctt1,conventional_train.df,type="vector"))
+PredTreeScore1 = data.frame(predict(ctt1,conventional_train.df,type="probability"))
 train1 = data.frame(conventional_train.df,PredLabel1,PredTreeScore1)
 
-## valid
-PredLabelValid1 = predict(ctt1,valid,type="class")
-PredTreeScoreValid1 = data.frame(predict(ctt1,conventional_test.df,type="vector"))
+## test
+PredLabelValid1 = predict(ctt1,conventional_test.df,type="class")
+PredTreeScoreValid1 = data.frame(predict(ctt1,conventional_test.df,type="probability"))
 valid1 = data.frame(conventional_test.df,PredLabelValid1,PredTreeScoreValid1)
 ```
+
+
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(caret)
+library(ggplot2)
+library(reshape2)
+pred = factor(PredLabelValid1)
+levels(pred)
+truth = factor(conventional_test.df$asLabel)
+levels(truth)
+confusionMatrix(pred, truth)
+input.mat = as.matrix(confusionMatrix(pred, truth))
+normalized.mat = sweep(input.mat, 2, colSums(input.mat), "/" )
+melt.mat <- melt(normalized.mat)
+ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Confusion Matrix of  decision tree J48 for conventional features") +
+  xlab("Prediction") + ylab("truth") + labs(fill = "frequency")
+```
+
 
 ## Predict 2 (below with the train and validation set)
 ```{r}
 PredLabel2 = predict(ctt2,socialmedia_train.df,type="class")
-PredTreeScore2 = data.frame(predict(ctt2,socialmedia_train.df,type="vector"))
+PredTreeScore2 = data.frame(predict(ctt2,socialmedia_train.df,type="class"))
 train2 = data.frame(socialmedia_train.df,PredLabel2,PredTreeScore2)
 
-## valid
+## test
 PredLabelValid2 = predict(ctt2,socialmedia_test.df,type="class")
-PredTreeScoreValid2 = data.frame(predict(ctt2,socialmedia_test.df,type="vector"))
+PredTreeScoreValid2 = data.frame(predict(ctt2,socialmedia_test.df,type="class"))
 valid2 = data.frame(socialmedia_test.df,PredLabelValid2,PredTreeScoreValid2)
+```
+
+```{r}
+pred = factor(PredLabelValid2)
+levels(pred)
+truth = factor(socialmedia_test.df$asLabel)
+levels(truth)
+confusionMatrix(pred, truth)
+input.mat = as.matrix(confusionMatrix(pred, truth))
+normalized.mat = sweep(input.mat, 2, colSums(input.mat), "/" )
+melt.mat <- melt(normalized.mat)
+ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Confusion Matrix of  decision tree J48 for social media features") +
+  xlab("Prediction") + ylab("truth") + labs(fill = "frequency")
+```
+
+
 ```
 
 ## Give out the validation error rate

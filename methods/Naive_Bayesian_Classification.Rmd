@@ -69,10 +69,10 @@ summary(predict(NBclassfier_conventional, newdata = train))
 ```{r}
 library(naivebayes)
 library(ggplot2)
-printALL=function(model){
+printALL_conventional=function(model){
   trainPred=predict(model, newdata = train, type = "class")
   trainTable=table(train$asLabel, trainPred)
-  testPred=predict(NBclassfier, newdata=test, type="class")
+  testPred=predict(NBclassfier_conventional, newdata=test, type="class")
   testTable=table(test$asLabel, testPred)
   trainAcc=(trainTable[1,1]+trainTable[2,2]+trainTable[3,3])/sum(trainTable)
   testAcc=(testTable[1,1]+testTable[2,2]+testTable[3,3])/sum(testTable)
@@ -84,7 +84,7 @@ printALL=function(model){
   print(round(cbind(trainAccuracy=trainAcc, testAccuracy=testAcc),3))
 }
 newNBclassifier_conventional=naive_bayes(asLabel ~ Genre+Budget+Screens+Sequel+Gross,usekernel=T, data=train)
-printALL(newNBclassifier_conventional)
+printALL_conventional(newNBclassifier_conventional)
 ```
 ## Confusion Matrix of Train dataset - Converntional Features
 ```{r}
@@ -103,7 +103,7 @@ melt.mat.test_conventional <- melt(normalized.mat.test_conventional)
 ggplot(data = melt.mat.test_conventional, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile() + ggtitle("Train Dataset Confusion Matrix of NaiveBayesian conventional") +
   xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
-cfm_test
+cfm_test_conventional
 ```
 
 ##### Social Media Features #####
@@ -119,9 +119,22 @@ summary(predict(NBclassfier_social_media, newdata = train))
 ```{r}
 library(naivebayes)
 library(ggplot2)
-
+printALL_social=function(model){
+  trainPred=predict(model, newdata = train, type = "class")
+  trainTable=table(train$asLabel, trainPred)
+  testPred=predict(NBclassfier_social_media, newdata=test, type="class")
+  testTable=table(test$asLabel, testPred)
+  trainAcc=(trainTable[1,1]+trainTable[2,2]+trainTable[3,3])/sum(trainTable)
+  testAcc=(testTable[1,1]+testTable[2,2]+testTable[3,3])/sum(testTable)
+  message("Contingency Table for Training Data")
+  print(trainTable)
+  message("Contingency Table for Test Data")
+  print(testTable)
+  message("Accuracy")
+  print(round(cbind(trainAccuracy=trainAcc, testAccuracy=testAcc),3))
+}
 newNBclassifier_social_media=naive_bayes(asLabel ~ Aggregate.Followers+Sentiment+Views+Likes+Dislikes+Comments,usekernel=T, data=train)
-printALL(newNBclassifier_social_media)
+printALL_social(newNBclassifier_social_media)
 ```
 #### Confusion Matrix of Test dataset - Social Media
 ```{r}

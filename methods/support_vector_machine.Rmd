@@ -18,7 +18,7 @@ When you click the **Knit** button a document will be generated that includes bo
 ---
 title: "Naive_Bayesian_Classification"
 author: "hz2619"
-date: "12/8/2019"
+date: "12/16/2019"
 output: html_document
 ---
 
@@ -77,7 +77,8 @@ library(ggplot2)
 library(scales)
 library(reshape2)
 library(e1071)
-svm_conventional <-svm(asLabel ~ Genre+Budget+Screens+Sequel+Gross, data = train,kernel = "polynomial",gemma = 0.9, coef0 = 3, degree = 4) ## hyperplane
+library(caret)
+svm_conventional <-svm(asLabel ~ Genre+Budget+Screens+Sequel+Gross, data = train,kernel = "radial") ## hyperplane
 pred.svm.conventinoal <- predict(svm_conventional,newdata = test)
 test = na.omit(test) ### delete NA !!!!!!
 cfm_svm_conventional <- confusionMatrix(pred.svm.conventinoal,test$asLabel)
@@ -97,7 +98,8 @@ library(ggplot2)
 library(scales)
 library(reshape2)
 library(e1071)
-svm_social_media <-svm(asLabel ~ Aggregate.Followers+Sentiment+Views+Likes+Dislikes+Comments, data = train,kernel = "polynomial",coef0 = 4) ### hyperplane
+library(caret)
+svm_social_media <-svm(asLabel ~ Aggregate.Followers+Sentiment+Views+Likes+Dislikes+Comments, data = train,kernel = "polynomial",gemma = 1, coef0 = 7, degree = 3) ### hyperplane
 pred.svm.social_media <- predict(svm_social_media,newdata = test)
 test = na.omit(test) ### delete NA !!!!!!
 cfm_svm_social_media <- confusionMatrix(pred.svm.social_media,test$asLabel)

@@ -55,8 +55,8 @@ valid = subset(data1,data1$indicator1==0)
 ```{r}
 # train = train[, c("Genre", "Gross", "Budget", "Screens", "Sequel","asLabel")]
 # valid = valid[, c("Genre", "Gross", "Budget", "Screens", "Sequel","asLabel")]
-train = train[, c("Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers","asLabel")]
-valid = valid[, c("Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers","asLabel")]
+# train = train[, c("Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers","asLabel")]
+# valid = valid[, c("Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers","asLabel")]
 ```
 
 # set up ANN formula
@@ -71,7 +71,7 @@ library(nnet)
 set.seed(12)
 targets <- class.ind(train$asLabel)
 #net <- nnet(f, data = train_norm, size = 5, rang=0.2, decay=5e-4, maxit = 200)
-net <- nnet(f, data = train, size = 20, rang=0.2, decay=5e-4, maxit = 250,skip=1)
+net <- nnet(f, data = train, size = 20, rang=0.2, decay=5e-4, maxit = 250, skip=1)
 ```
 ```{r}
 # print(pred1)
@@ -151,7 +151,7 @@ input.mat = as.matrix(confusionMatrix(pred, truth))
 normalized.mat = sweep(input.mat, 2, colSums(input.mat), "/" )
 melt.mat <- melt(normalized.mat)
 ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() + ggtitle("Confusion Matrix of  linear regression for social media features") +
+  geom_tile() + ggtitle("Confusion Matrix of Artificial Neural Network for social media features") +
   xlab("Prediction") + ylab("truth") + labs(fill = "frequency")
 
 ```

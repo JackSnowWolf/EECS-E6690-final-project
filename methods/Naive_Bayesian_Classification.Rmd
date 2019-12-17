@@ -28,7 +28,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=7.5){
+  }else if(val<=7.4){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -94,14 +94,13 @@ library(ggplot2)
 library(scales)
 library(reshape2)
 
-
 NB_test_predict_conventional  <- predict(NBclassfier_conventional, newdata = test)
 cfm_test_conventional  <- confusionMatrix(NB_test_predict_conventional,test$asLabel)
 input.mat.test_conventional = as.matrix(cfm_test_conventional)
 normalized.mat.test_conventional = sweep(input.mat.test_conventional, 2, colSums(input.mat.test_conventional), "/" )
 melt.mat.test_conventional <- melt(normalized.mat.test_conventional)
 ggplot(data = melt.mat.test_conventional, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() + ggtitle("Train Dataset Confusion Matrix of NaiveBayesian conventional") +
+  geom_tile() + ggtitle("Confusion Matrix of NaiveBayesian conventional feature") +
   xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
 cfm_test_conventional
 ```
@@ -149,7 +148,7 @@ input.mat.test_social_media = as.matrix(cfm_test_social_media)
 normalized.mat.test_social_media = sweep(input.mat.test_social_media, 2, colSums(input.mat.test_social_media), "/" )
 melt.mat.test_social_media <- melt(normalized.mat.test_social_media)
 ggplot(data = melt.mat.test_social_media, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() + ggtitle("Test Dataset Confusion Matrix of NaiveBayesian social media feature") +
+  geom_tile() + ggtitle("Confusion Matrix of NaiveBayesian social media feature") +
   xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
 cfm_test_social_media
 ```

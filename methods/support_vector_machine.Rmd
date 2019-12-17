@@ -40,7 +40,7 @@ data1 <- read_xlsx("../data/1415CSM_dataset.xlsx")
 i=1
 asLabel=""
 for (val in data1$Ratings) {
-  if(val<=4.9){
+  if(val<=5.2){
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
@@ -89,6 +89,8 @@ ggplot(data = melt.mat.test_conventional, aes(x=Var1, y=Var2, fill=value)) +
   geom_tile() + ggtitle("Confusion Matrix of Support Vector Machine Conventional Feature") +
   xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
 cfm_svm_conventional
+
+
 ```
 ## support vector machine - social media feature
 ```{r}

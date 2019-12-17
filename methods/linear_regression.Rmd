@@ -19,7 +19,7 @@ data1 = read_excel("../data/1415CSM_dataset1.xlsx")
 i=1
 asLabel=""
 for (val in data1$Ratings) {
-  if(val<=4.9){
+  if(val<=5.2){
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"

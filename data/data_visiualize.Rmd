@@ -46,6 +46,7 @@ gg <- ggplot(data.df, aes(x=log(Budget), y=Gross)) +
        title="Scatterplot", 
        caption = "Source: conventional and soical media dataset")
 gg
+ggsave("../figures/data_relationship.jpg")
 ```
 
 ```{r}
@@ -84,6 +85,7 @@ theme(
   guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
                 title.position = "top", title.hjust = 0.5))
 p
+ggsave("../figures/data_correlation.png", p)
 ```
 
 
@@ -103,7 +105,8 @@ p2 <-ggplot(data.df, aes(y=Ratings))+
         axis.ticks.y=element_blank())
 
 library(patchwork)
-p1 + p2 + plot_layout(nrow = 2, heights = c(5, 1))
+concat <- p1 + p2 + plot_layout(nrow = 2, heights = c(5, 1))
+ggsave("../figures/data_rating.png", concat)
 ```
 
 ```{r}
@@ -113,8 +116,7 @@ gross_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'G
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(x="Label")
 gross_p
-
-
+ggsave("../figures/data_gross_rating.png", gross_p)
 ```
 
 ```{r}
@@ -124,6 +126,7 @@ budget_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', '
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(x="Label")
 budget_p
+ggsave("../figures/data_budget_rating.png", budget_p)
 ```
 
 
@@ -134,6 +137,7 @@ screens_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(x="Label")
 screens_p
+ggsave("../figures/data_screens_rating.png", screens_p)
 ```
 ```{r}
 views_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=Views, fill=asLabel)) + 
@@ -142,6 +146,7 @@ views_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'G
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(x="Label")
 views_p
+ggsave("../figures/data_view_rating.png", views_p)
 ```
 
 
@@ -154,6 +159,7 @@ likes_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'G
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(x="Label")
 likes_p
+ggsave("../figures/data_likes_rating.png", likes_p)
 ```
 
 ```{r}
@@ -163,6 +169,7 @@ dislike_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(x="Label")
 dislike_p
+ggsave("../figures/data_dislikes_rating.png", dislike_p)
 ```
 
 ```{r}
@@ -172,6 +179,7 @@ sentiment_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average'
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(x="Label")
 sentiment_p
+ggsave("../figures/data_sentiment_rating.png", sentiment_p)
 ```
 ```{r}
 comment_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 'Good', 'Excellent')), y=log(Comments), fill=asLabel)) + 
@@ -180,6 +188,7 @@ comment_p <- ggplot(data.df, aes(x=factor(asLabel, level = c('Poor', 'Average', 
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(x="Label")
 comment_p
+ggsave("../figures/data_comment_rating.png", comment_p)
 ```
 ```{r}
 genre_p <- ggplot(data.df, aes(Genre, ..count..)) + 
@@ -188,6 +197,7 @@ genre_p <- ggplot(data.df, aes(Genre, ..count..)) +
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(fill = "Label")
 genre_p
+ggsave("../figures/data_genre_rating.png", genre_p)
 ```
 
 ```{r}
@@ -197,5 +207,6 @@ sequel_p <- ggplot(data.df, aes(Sequel, ..count..)) +
   theme(axis.text.x = element_text(angle = 0, hjust = 1))+
   labs(fill = "Label")
 sequel_p
+ggsave("../figures/data_sequel_rating.png", sequel_p)
 ```
 

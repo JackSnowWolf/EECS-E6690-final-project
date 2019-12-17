@@ -1,7 +1,7 @@
 ---
 title: "Naive_Bayesian_Classification"
 author: "hz2619"
-date: "12/8/2019"
+date: "12/16/2019"
 output: html_document
 ---
 
@@ -28,7 +28,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=7.2){
+  }else if(val<=7.5){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"

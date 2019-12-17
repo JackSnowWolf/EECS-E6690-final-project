@@ -1,7 +1,7 @@
 ---
-title: "support_vector_machine"
+title: "LDA_QDA"
 author: "hz2619"
-date: "12/8/2019"
+date: "12/16/2019"
 output: html_document
 ---
 
@@ -14,13 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
----
-title: "Naive_Bayesian_Classification"
-author: "hz2619"
-date: "12/16/2019"
-output: html_document
----
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -44,7 +37,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=7.2){
+  }else if(val<=7.5){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -69,28 +62,11 @@ data1 = data.frame(data1,indicator1)
 train = subset(data1,data1$indicator1==1)
 test = subset(data1,data1$indicator1==0)
 ```
-## support vector machine - conventional feature
+
 ```{r}
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(scales)
-library(reshape2)
-library(e1071)
-library(caret)
-svm_conventional <-svm(asLabel ~ Genre+Budget+Screens+Sequel+Gross, data = train,kernel = "radial") ## hyperplane
-pred.svm.conventinoal <- predict(svm_conventional,newdata = test)
-test = na.omit(test) ### delete NA !!!!!!
-cfm_svm_conventional <- confusionMatrix(pred.svm.conventinoal,test$asLabel)
-input.mat.test_conventional = as.matrix(cfm_svm_conventional)
-normalized.mat.test_conventional = sweep(input.mat.test_conventional, 2, colSums(input.mat.test_conventional), "/" )
-melt.mat.test_conventional <- melt(normalized.mat.test_conventional)
-ggplot(data = melt.mat.test_conventional, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() + ggtitle("Confusion Matrix of Support Vector Machine Conventional Feature") +
-  xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
-cfm_svm_conventional
+print(test$asLabel)
 ```
-## support vector machine - social media feature
+
 ```{r}
 library(dplyr)
 library(tidyr)
@@ -99,15 +75,36 @@ library(scales)
 library(reshape2)
 library(e1071)
 library(caret)
-svm_social_media <-svm(asLabel ~ Aggregate.Followers+Sentiment+Views+Likes+Dislikes+Comments, data = train,kernel = "polynomial",gemma = 1, coef0 = 7, degree = 3) ### hyperplane
-pred.svm.social_media <- predict(svm_social_media,newdata = test)
-test = na.omit(test) ### delete NA !!!!!!
-cfm_svm_social_media <- confusionMatrix(pred.svm.social_media,test$asLabel)
-input.mat.test_social_media = as.matrix(cfm_svm_conventional)
-normalized.mat.test_social_media = sweep(input.mat.test_social_media, 2, colSums(input.mat.test_social_media), "/" )
-melt.mat.test_social_media <- melt(normalized.mat.test_social_media)
-ggplot(data = melt.mat.test_social_media, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() + ggtitle("Confusion Matrix of Support Vector Machine Social Media Feature") +
+library(MASS)
+lda_conventional <- lda(asLabel ~ Genre+Budget+Screens+Sequel+Gross, data = train)
+pred.lda.conventinoal <- predict(lda_conventional,newdata = test)
+test = na.omit(test) 
+#table_LDA=table(pred.lda.conventinoal$class,test$asLabel)
+print(table_LDA)
+error_LDA=1-sum(diag(table_LDA))/sum(table_LDA)
+input.mat.lda.conventional = as.matrix(table_LDA)
+normalized.mat.lda.conventional = sweep(input.mat.lda.conventional, 2, colSums(input.mat.lda.conventional), "/" )
+melt.mat.lda.conventional = melt(normalized.mat.lda.conventional)
+ggplot(data = melt.mat.lda.conventional , aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Confusion Matrix of LDA Conventional Feature") +
   xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
-cfm_svm_social_media
+match_rate_LDA = 1-error_LDA
+match_rate_LDA
+```
+```{r}
+qda_conventional <- qda(asLabel ~ Genre+Budget+Screens+Sequel+Gross, data = train)
+pred.qda.conventinoal <- predict(qda_conventional,newdata = test)
+test = na.omit(test) 
+#print(pred.qda.conventinoal$class)
+table_QDA=table(pred.qda.conventinoal$class,test$asLabel)
+print(table_QDA)
+error_QDA=1-sum(diag(table_QDA))/sum(table_QDA)
+input.mat.qda.conventional = as.matrix(table_QDA)
+normalized.mat.qda.conventional = sweep(input.mat.qda.conventional, 2, colSums(input.mat.qda.conventional), "/" )
+melt.mat.qda.conventional = melt(normalized.mat.qda.conventional)
+ggplot(data = melt.mat.qda.conventional , aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Confusion Matrix of QDA Conventional Feature") +
+  xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
+match_rate_QDA = 1-error_QDA
+match_rate_QDA
 ```

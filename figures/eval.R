@@ -11,7 +11,12 @@ p <- ggplot(eval.m, aes(x= reorder(type, -value), y=value))+
   geom_bar(aes(fill=variable),  position="dodge",stat="identity", width = 0.5)+
   theme(legend.position="left")+                                                                  
   labs(y="accuracy [%]", 
-       x="different methods evaluations on convensional features and  social media features", 
+       x="Different methods evaluations on convensional features and  social media features", 
        fill = "methods")+
-  theme(axis.text.x = element_text(angle = 30, hjust = 1))
-ggsave("figures/eval_comparsion.jpg", p, width = 10, height = 6)
+  theme(axis.text.y = element_text(size = 18),
+        axis.text.x = element_text(angle = 30, hjust = 1, size = 18),
+        legend.text = element_text(size = 16),
+        axis.title.x= element_text(size = 18),
+        axis.title.y= element_text(size = 18),
+        legend.title = element_text(size = 18))
+ggsave("figures/eval_comparsion.jpg", p, width = 12, height = 6)

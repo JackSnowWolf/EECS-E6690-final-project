@@ -24,7 +24,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=7.5){
+  }else if(val<=8){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -64,7 +64,7 @@ library(nnet)
 set.seed(12)
 targets <- class.ind(train$asLabel)
 #net <- nnet(f, data = train_norm, size = 5, rang=0.2, decay=5e-4, maxit = 200)
-net <- nnet(f, data = train, size = 6, rang=0.2, decay=5e-4, maxit = 250,skip=1)
+net <- nnet(f, data = train, size = 6, rang=0.2, decay=5e-4, maxit = 250,skip=2)
 ```
 ```{r}
 # print(pred1)
@@ -123,7 +123,10 @@ error_valid = 1 - sum(diag(tv)) / sum(tv)
 error_train
 error_valid
 ```
-
+```{r}
+print(valid_res_label)
+print(valid$asLabel)
+```
 
 ```{r}
 print(tv)
@@ -131,13 +134,19 @@ print(tv)
 ```{r}
 library(reshape2)
 library(ggplot2)
-input.mat.ann.conventional = as.matrix(tv)
+library(caret)
+pred = factor(valid_res_label)
 
-normalized.mat.ann.conventional = sweep(input.mat.ann.conventional, 2, colSums(input.mat.ann.conventional), "/" )
-melt.mat.ann.conventional = melt(normalized.mat.ann.conventional)
-ggplot(data = melt.mat.ann.conventional , aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile() + ggtitle("Confusion Matrix of Artificial Neural Network") +
-  xlab("Prediction") + ylab("Actual") + labs(fill = "frequency")
+truth = factor(valid$asLabel)
+
+confusionMatrix(pred, truth)
+input.mat = as.matrix(confusionMatrix(pred, truth))
+normalized.mat = sweep(input.mat, 2, colSums(input.mat), "/" )
+melt.mat <- melt(normalized.mat)
+ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Confusion Matrix of  linear regression for social media features") +
+  xlab("Prediction") + ylab("truth") + labs(fill = "frequency")
+
 ```
 
 

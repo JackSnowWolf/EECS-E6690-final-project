@@ -20,11 +20,11 @@ i=1
 data1=na.omit(data1)
 asLabel=""
 for (val in data1$Ratings) {
-  if(val<=4.9){
+  if(val<=5.2){
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=8){
+  }else if(val<=7.2){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -40,7 +40,6 @@ scaled.dat <- scale(data1[,4:14])
 # print(scaled.dat)
 data1 = data.frame(scaled.dat,asLabel)
 
-# print(data1)
 set.seed(10)
 datasize = dim(data1)[1]
 train_idx = sample(datasize, datasize*0.8)
@@ -48,10 +47,18 @@ train_idx = sample(datasize, datasize*0.8)
 indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
 data1 = data.frame(data1,indicator1)
-# print(data1)
+print(data1)
 train = subset(data1,data1$indicator1==1)
 valid = subset(data1,data1$indicator1==0)
 ```
+
+```{r}
+# train = train[, c("Genre", "Gross", "Budget", "Screens", "Sequel","asLabel")]
+# valid = valid[, c("Genre", "Gross", "Budget", "Screens", "Sequel","asLabel")]
+train = train[, c("Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers","asLabel")]
+valid = valid[, c("Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers","asLabel")]
+```
+
 # set up ANN formula
 ```{r}
 names = names(train)
@@ -64,7 +71,7 @@ library(nnet)
 set.seed(12)
 targets <- class.ind(train$asLabel)
 #net <- nnet(f, data = train_norm, size = 5, rang=0.2, decay=5e-4, maxit = 200)
-net <- nnet(f, data = train, size = 8, rang=0.2, decay=5e-4, maxit = 250,skip=2)
+net <- nnet(f, data = train, size = 20, rang=0.2, decay=5e-4, maxit = 250,skip=1)
 ```
 ```{r}
 # print(pred1)
@@ -120,8 +127,8 @@ valid_res_label=as.factor(valid_res_label)
 tv = table(pred =valid_res_label, actual = valid$asLabel)
 error_valid = 1 - sum(diag(tv)) / sum(tv)
 
-error_train
-error_valid
+print(1-error_train)
+print(1-error_valid)
 ```
 ```{r}
 print(valid_res_label)

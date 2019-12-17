@@ -110,6 +110,7 @@ sum(conventional.pred==conventional_test.df$asLabel)/nrow(conventional_test.df)
 
 ```{r}
 summary(conventional.lm)
+
 plot(conventional.lm)
 ```
 

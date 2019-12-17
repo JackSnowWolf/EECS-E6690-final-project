@@ -15,16 +15,16 @@ This is an R Markdown document.
 
 ```{r}
 library("readxl")
-data1 = read_excel("../data/1415CSM_dataset.xlsx")
+data1 = read_excel("../data/1415CSM_dataset1.xlsx")
 i=1
 data1=na.omit(data1)
 asLabel=""
 for (val in data1$Ratings) {
-  if(val<=4.9){
+  if(val<=5.2){
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=7.5){
+  }else if(val<=7.2){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -78,14 +78,14 @@ ctt2 = J48(asLabel~.-Ratings,socialmedia_train.df)
 ## Prune Tree
 ```{r}
 # ctt1 = tree(asLabel~.-Ratings,conventional_train.df,mindev=0.01)
-ctt1 = J48(asLabel~.-Ratings,conventional_train.df)
+ctt1 = J48(asLabel~.,subset(conventional_train.df, select = -c(Ratings)), control = Weka_control(R=FALSE))
 # I change mindev from 0.01 to 0.9 to see the best performance. choose 0.03
 ```
 
 ## Prune Tree 2
 ```{r}
 # ctt2 = tree(asLabel~.-Ratings,socialmedia_train.df,mindev=0.01)
-ctt2 = J48(asLabel~.-Ratings,socialmedia_train.df)
+ctt2 = J48(asLabel~.,subset(socialmedia_train.df, select = -c(Ratings)))
 # I change mindev from 0.01 to 0.9 to see the best performance. choose 0.03
 ```
 
@@ -108,12 +108,12 @@ ctt2
 ```{r}
 library(rpart)
 library(rpart.plot)
-pretty_tree1=rpart(asLabel~.-Ratings,data=conventional_train.df,cp=0.001)
+pretty_tree1=rpart(asLabel~.-Ratings,data=conventional_train.df,cp=0.01)
 rpart.plot(pretty_tree1,box.palette = "RdBu",shadow.col = "gray",nn=TRUE)
 ```
 ## 2
 ```{r}
-pretty_tree2=rpart(asLabel~.-Ratings,data=socialmedia_train.df,cp=0.001)
+pretty_tree2=rpart(asLabel~.-Ratings,data=socialmedia_train.df,cp=0.02)
 rpart.plot(pretty_tree2,box.palette = "RdBu",shadow.col = "gray",nn=TRUE)
 ```
 

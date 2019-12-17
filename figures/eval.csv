@@ -1,0 +1,11 @@
+type,social_media,conventional
+linear regression,0.4464286,0.3571429
+ANN,0.6666667,0.6296296
+Naive Bayesian,0.4043,0.3617
+Support Vector Machine,0.3846,0.4359
+LDA,0.3035714,0.3392857
+QDA,0.3928571,0.2857143
+generalized additive model,0.3928571,0.4107143
+generalised linear regression,0.3571429,0.4285714
+random forest,0.6964286,0.625
+J48,0.6852,0.6296

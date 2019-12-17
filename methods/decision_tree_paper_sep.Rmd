@@ -108,13 +108,18 @@ ctt2
 ```{r}
 library(rpart)
 library(rpart.plot)
+png("../figures/j48_conv_tree.png", width = 7, height = 7, units = 'in', res = 300)
 pretty_tree1=rpart(asLabel~.-Ratings,data=conventional_train.df,cp=0.01)
 rpart.plot(pretty_tree1,box.palette = "RdBu",shadow.col = "gray",nn=TRUE)
+dev.off()
 ```
 ## 2
 ```{r}
+
+png("../figures/j48_social_tree.png", width = 7, height = 7, units = 'in', res = 300)
 pretty_tree2=rpart(asLabel~.-Ratings,data=socialmedia_train.df,cp=0.02)
 rpart.plot(pretty_tree2,box.palette = "RdBu",shadow.col = "gray",nn=TRUE)
+dev.off()
 ```
 
 ```{r}
@@ -152,6 +157,7 @@ melt.mat <- melt(normalized.mat)
 ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile() + ggtitle("Confusion Matrix of  decision tree J48 for conventional features") +
   xlab("Prediction") + ylab("truth") + labs(fill = "frequency")
+ggsave("../figures/j48_conv_confusion.png")
 ```
 
 
@@ -179,6 +185,7 @@ melt.mat <- melt(normalized.mat)
 ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile() + ggtitle("Confusion Matrix of  decision tree J48 for social media features") +
   xlab("Prediction") + ylab("truth") + labs(fill = "frequency")
+ggsave("../figures/j48_social_confusion.png")
 ```
 
 

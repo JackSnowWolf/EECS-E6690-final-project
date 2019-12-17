@@ -24,7 +24,7 @@ for (val in data1$Ratings) {
     asLabel[i]="Poor"
   }else if(val<=6.4){
     asLabel[i]="Average"
-  }else if(val<=8.9){
+  }else if(val<=8){
     asLabel[i]="Good"
   }else if(val<=10){
     asLabel[i]="Excellent"
@@ -43,7 +43,7 @@ data1 = data.frame(scaled.dat,asLabel)
 # print(data1)
 set.seed(10)
 datasize = dim(data1)[1]
-train_idx = sample(datasize, datasize*0.9)
+train_idx = sample(datasize, datasize*0.8)
 
 indicator1 = rep(0,datasize)
 indicator1[train_idx] = 1 # 1:train 0:valid
@@ -64,13 +64,15 @@ library(nnet)
 set.seed(12)
 targets <- class.ind(train$asLabel)
 #net <- nnet(f, data = train_norm, size = 5, rang=0.2, decay=5e-4, maxit = 200)
-net <- nnet(f, data = train, size = 6, rang=0.2, decay=5e-4, maxit = 250,skip=1)
+net <- nnet(f, data = train, size = 6, rang=0.2, decay=5e-4, maxit = 250,skip=2)
 ```
 ```{r}
 # print(pred1)
 # print(train_res_label)
 # print(train$asLabel)
 ```
+
+
 
 ```{r}
 # train
@@ -79,12 +81,14 @@ pred1=round(pred)
 # print(pred1)
 train_res_label=""
 n=1
-for (m in 1:(length(pred1)/3)) {
+for (m in 1:(length(pred1)/4)) {
   if((pred1[m,1])>0.5){
     train_res_label[n]="Average"
   }else if((pred1[m,2])>0.5){
-    train_res_label[n]="Good"
+    train_res_label[n]="Excellent"
   }else if((pred1[m,3])>0.5){
+    train_res_label[n]="Good"
+  }else if((pred1[m,4])>0.5){
     train_res_label[n]="Poor"
   }
   n=n+1
@@ -100,12 +104,14 @@ predV = predict(net, valid)
 pred2=round(predV)
 valid_res_label=""
 n=1
-for (m in 1:(length(pred2)/3)) {
-  if((pred2[m,1])>0.5){
+for (q in 1:(length(predV)/4)) {
+  if((predV[q,1])==max(predV[q,1],predV[q,2],predV[q,3],predV[q,4])){
     valid_res_label[n]="Average"
-  }else if((pred2[m,2])>0.5){
+  }else if((predV[q,2])==max(predV[q,1],predV[q,2],predV[q,3],predV[q,4])){
+    valid_res_label[n]="Excellent"
+  }else if((predV[q,3])==max(predV[q,1],predV[q,2],predV[q,3],predV[q,4])){
     valid_res_label[n]="Good"
-  }else if((pred2[m,3])>0.5){
+  }else if((predV[q,4])==max(predV[q,1],predV[q,2],predV[q,3],predV[q,4])){
     valid_res_label[n]="Poor"
   }
   n=n+1
@@ -117,5 +123,40 @@ error_valid = 1 - sum(diag(tv)) / sum(tv)
 error_train
 error_valid
 ```
+```{r}
+print(valid_res_label)
+print(valid$asLabel)
+```
+
+```{r}
+print(tv)
+```
+```{r}
+library(reshape2)
+library(ggplot2)
+library(caret)
+pred = factor(valid_res_label)
+
+truth = factor(valid$asLabel)
+
+confusionMatrix(pred, truth)
+input.mat = as.matrix(confusionMatrix(pred, truth))
+normalized.mat = sweep(input.mat, 2, colSums(input.mat), "/" )
+melt.mat <- melt(normalized.mat)
+ggplot(data = melt.mat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + ggtitle("Confusion Matrix of  linear regression for social media features") +
+  xlab("Prediction") + ylab("truth") + labs(fill = "frequency")
+
+```
+
+
+
+
+
+
+
+
+
+
 
 

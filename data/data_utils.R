@@ -28,5 +28,3 @@ data1 = data.frame(data1,indicator1)
 train = subset(data1,data1$indicator1==1)
 valid = subset(data1,data1$indicator1==0)
 
-write.csv(train, "data/train.csv", row.names=FALSE)
-write.csv(valid, "data/test.csv", row.names=FALSE)

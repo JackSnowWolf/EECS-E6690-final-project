@@ -16,8 +16,6 @@ Final project for EECS E6690 Statistical learning @ Columbia University
 - [Chen Wenjie](https://github.com/JACKCHEN96)
 - [Zhang Haoran](https://github.com/Headnerd9798)
 
-## Google Docs
-https://docs.google.com/document/d/1DFl_deKMdOxsX90Pb2PIhx8yPqf_Ag1M_E-SxgoTtKk/edit
 
 ## Google Slide
 https://docs.google.com/presentation/d/18lz5sqOB89zLfCIxd0eHwVtLrByeYrlfDFwNO6LWtFc/edit?usp=sharing

@@ -53,8 +53,8 @@ valid = subset(data1,data1$indicator1==0)
 ```
 
 ```{r}
-# train = train[, c("Genre", "Gross", "Budget", "Screens", "Sequel","asLabel")]
-# valid = valid[, c("Genre", "Gross", "Budget", "Screens", "Sequel","asLabel")]
+train = train[, c("Genre", "Gross", "Budget", "Screens", "Sequel","asLabel")]
+valid = valid[, c("Genre", "Gross", "Budget", "Screens", "Sequel","asLabel")]
 # train = train[, c("Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers","asLabel")]
 # valid = valid[, c("Sentiment", "Views", "Likes", "Dislikes", "Comments", "Aggregate.Followers","asLabel")]
 ```
